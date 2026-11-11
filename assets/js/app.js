@@ -5,6 +5,15 @@
    ========================================================================== */
 'use strict';
 
+/* Guard: jika pustaka OpenLayers gagal dimuat, tampilkan error jelas */
+if (typeof ol === 'undefined') {
+  const msgEl0 = document.getElementById('loading-msg');
+  if (msgEl0) msgEl0.textContent = 'Error: pustaka OpenLayers (assets/vendor/ol.js) gagal dimuat. Periksa koneksi lalu klik Coba Lagi.';
+  const retry0 = document.getElementById('btn-retry');
+  if (retry0) retry0.hidden = false;
+  throw new Error('OpenLayers tidak termuat');
+}
+
 /* ---------- Konfigurasi ---------- */
 const COLORS = {
   0: { fill: 'rgba(43,130,201,0.62)', stroke: '#1b5b91' },
