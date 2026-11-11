@@ -75,7 +75,7 @@ const map = new ol.Map({
     maxZoom: 19,
     constrainResolution: true
   }),
-  controls: ol.control.defaults().extend([new ol.control.ScaleLine({ units: 'metric' })])
+  controls: ol.control.defaults.defaults().extend([new ol.control.ScaleLine({ units: 'metric' })])
 });
 
 const osmLayer = new ol.layer.Tile({
