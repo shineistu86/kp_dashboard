@@ -27,7 +27,8 @@ const PATHS = {
   parcels: 'hasil_clustering_polygon_v9.geojson',
   admin: 'admin_batas.geojson',
   desaList: 'data/desa_list.json',
-  dkMap: 'data/parcels_dk.json'
+  dkMap: 'data/parcels_dk.json',
+  names: 'data/desa_names.json'
 };
 const GARUT_EXTENT_4326 = [107.42, -7.65, 108.02, -7.05];
 
@@ -37,6 +38,7 @@ let adminFilter = 'all';
 let selectedFeature = null;
 let initialExtent = null;
 let dkMap = {};
+let desaNames = { kecamatan: {}, desa: {} };
 let isSidebarOpen = true;
 let uiReady = false;
 
@@ -270,7 +272,7 @@ function renderDetail(feature) {
   const dk = feature.get('dk');
   const html =
     infoRow('Polygon ID', feature.get('polygon_id')) +
-    infoRow('Kode Desa/Kelurahan', dk ? dk : 'Tidak teridentifikasi') +
+    infoRow('Desa/Kelurahan', dk ? desaLabel(dk) : 'Tidak teridentifikasi') +
     infoRow('Cluster', CLUSTER_LABEL[c], c === 0 ? 'c0' : 'c1') +
     '<div class="info-section-title">Rincian Morfometri Geometris</div>' +
     infoRow('Luas Bidang', fmtInt(Math.round(feature.get('area'))) + ' m²') +
@@ -422,15 +424,30 @@ window.addEventListener('resize', () => {
 });
 
 /* ---------- Pemuatan data ---------- */
+function desaLabel(id) {
+  return desaNames.desa[id] || id;
+}
+
 function populateDesaDropdown(list) {
   const sel = $('admin-select');
   if (!sel) return;
-    sel.innerHTML = '<option value="all">Semua Desa/Kelurahan (Garut)</option>';
+  sel.innerHTML = '<option value="all">Semua Desa/Kelurahan (Garut)</option>';
+  const byKec = {};
   list.forEach((d) => {
-    const opt = document.createElement('option');
-    opt.value = d.id;
-    opt.textContent = d.id + ' (' + fmtInt(d.total) + ' bidang)';
-    sel.appendChild(opt);
+    const k = d.id.slice(0, 8);
+    if (!byKec[k]) byKec[k] = [];
+    byKec[k].push(d);
+  });
+  Object.keys(byKec).sort().forEach((k) => {
+    const grp = document.createElement('optgroup');
+    grp.label = desaNames.kecamatan[k] || k;
+    byKec[k].forEach((d) => {
+      const opt = document.createElement('option');
+      opt.value = d.id;
+      opt.textContent = desaLabel(d.id) + ' (' + fmtInt(d.total) + ' bidang)';
+      grp.appendChild(opt);
+    });
+    sel.appendChild(grp);
   });
 }
 
@@ -490,12 +507,14 @@ async function boot() {
   try {
     setProgress(2, 'Memuat daftar wilayah & batas administrasi…');
 
-    const [desaRes, dkRes, adminRes] = await Promise.all([
+    const [desaRes, dkRes, adminRes, namesRes] = await Promise.all([
       fetch(PATHS.desaList).then((r) => { if (!r.ok) throw new Error('desa_list.json tidak ditemukan'); return r.json(); }),
       fetch(PATHS.dkMap).then((r) => { if (!r.ok) throw new Error('parcels_dk.json tidak ditemukan'); return r.json(); }),
-      fetch(PATHS.admin).then((r) => { if (!r.ok) throw new Error('admin_batas.geojson tidak ditemukan'); return r.json(); })
+      fetch(PATHS.admin).then((r) => { if (!r.ok) throw new Error('admin_batas.geojson tidak ditemukan'); return r.json(); }),
+      fetch(PATHS.names).then((r) => r.ok ? r.json() : {}).catch(() => ({}))
     ]);
 
+    if (namesRes && namesRes.desa) desaNames = namesRes;
     populateDesaDropdown(desaRes);
     dkMap = (dkRes && dkRes.map) ? dkRes.map : {};
 
