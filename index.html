@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Dashboard visualisasi hasil K-Means Clustering 49.994 bidang tanah SAPADA — BAPENDA Kabupaten Garut. Dibangun dengan OpenLayers.">
+  <title>Peta Segmentasi Morfometri Bidang Tanah — BAPENDA Kabupaten Garut</title>
+
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/ol@10.11.0/ol.css">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+
+  <div id="loading" role="status">
+    <div class="spinner"></div>
+    <h2>Memuat Data Spasial</h2>
+    <p id="loading-msg">Menyiapkan dashboard…</p>
+    <div class="progress-bar-wrap">
+      <div class="progress-bar" id="prog"></div>
+    </div>
+    <p id="loading-pct">0%</p>
+    <button id="btn-retry" class="btn-retry" type="button" hidden onclick="location.reload()">Coba Lagi</button>
+  </div>
+
+  <header id="header">
+    <div class="title-block">
+      <h1>PETA SEGMENTASI MORFOMETRI BIDANG TANAH</h1>
+      <p>Analisis K-Means Clustering &amp; Batas Admin — BAPENDA Kabupaten Garut</p>
+    </div>
+    <div class="header-actions">
+      <div class="badge">
+        <strong id="hdr-total">…</strong>
+        Total Bidang
+      </div>
+      <button class="btn-panel-toggle" type="button" onclick="toggleSidebar()" title="Buka atau tutup panel informasi">
+        Panel Informasi
+      </button>
+    </div>
+  </header>
+
+  <nav id="filter-bar" aria-label="Filter visualisasi">
+    <div class="filter-group">
+      <span class="label">Cluster:</span>
+      <div class="filter-btn-group" role="group" aria-label="Filter cluster">
+        <button class="filter-btn all active" type="button" data-cluster="all">Semua</button>
+        <button class="filter-btn c0" type="button" data-cluster="0">Cluster 0</button>
+        <button class="filter-btn c1" type="button" data-cluster="1">Cluster 1</button>
+      </div>
+    </div>
+
+    <div class="filter-group">
+      <label class="label" for="admin-select">Desa/Kel:</label>
+      <select id="admin-select" title="Pilih wilayah administrasi">
+        <option value="all">-- Semua Desa/Kelurahan (Garut) --</option>
+      </select>
+    </div>
+
+    <label class="toggle-wrap">
+      <input type="checkbox" id="toggle-admin-layer" checked>
+      <span>Tampilkan Batas Admin</span>
+    </label>
+
+    <div class="basemap-switch" role="group" aria-label="Pilihan peta dasar">
+      <button class="basemap-btn active" type="button" data-basemap="osm">Peta OSM</button>
+      <button class="basemap-btn" type="button" data-basemap="sat">Citra Satelit</button>
+    </div>
+  </nav>
+
+  <main id="main">
+    <section id="map" aria-label="Peta interaktif hasil clustering">
+      <div id="tooltip" role="tooltip"></div>
+    </section>
+
+    <div id="empty-state" hidden>
+      <div class="empty-card">
+        <div class="empty-icon">∅</div>
+        <h3>Tidak Ada Bidang</h3>
+        <p>Kombinasi filter cluster dan desa/kelurahan saat ini tidak menghasilkan bidang tanah. Coba ubah filter.</p>
+      </div>
+    </div>
+
+    <button id="btn-floating-sidebar" type="button" onclick="toggleSidebar(true)" title="Tampilkan Legenda &amp; Detail">
+      Buka Panel Legenda
+    </button>
+
+    <div id="sidebar-backdrop" onclick="toggleSidebar(false)"></div>
+
+    <aside id="panel" aria-label="Panel informasi dan legenda">
+      <div class="panel-header">
+        <h2>Panel Informasi</h2>
+        <button class="panel-header-btn" type="button" onclick="toggleSidebar(false)">Tutup Panel</button>
+      </div>
+
+      <div class="panel-scroll">
+        <section id="legend">
+          <h3>Legenda Cluster</h3>
+          <div class="legend-item" data-cluster="0" title="Filter hanya Cluster 0" role="button" tabindex="0">
+            <div class="legend-dot c0-dot"></div>
+            <div class="legend-text">
+              <div class="cname">Cluster 0 <span class="ctag">Reguler &amp; Kompak</span></div>
+              <div class="ccount" id="c0-count">…</div>
+              <div class="legend-bar-wrap"><div class="legend-bar c0-bar" id="c0-bar"></div></div>
+            </div>
+          </div>
+          <div class="legend-item" data-cluster="1" title="Filter hanya Cluster 1" role="button" tabindex="0">
+            <div class="legend-dot c1-dot"></div>
+            <div class="legend-text">
+              <div class="cname">Cluster 1 <span class="ctag">Kompleks &amp; Memanjang</span></div>
+              <div class="ccount" id="c1-count">…</div>
+              <div class="legend-bar-wrap"><div class="legend-bar c1-bar" id="c1-bar"></div></div>
+            </div>
+          </div>
+        </section>
+
+        <section id="info-panel" hidden>
+          <div class="info-header">
+            <h3>Detail Bidang Tanah</h3>
+            <button class="close-btn" type="button" onclick="clearSelection()" title="Tutup detail bidang">Tutup</button>
+          </div>
+          <div id="info-content"></div>
+        </section>
+
+        <section id="interp">
+          <h3>Interpretasi Cluster</h3>
+          <article class="interp-card c0">
+            <div class="cluster-label">Cluster 0 — Bidang Reguler dan Kompak (82,5%)</div>
+            <p>Kelompok mayoritas (41.244 bidang): bentuk kompak dan beraturan mendekati persegi. Compactness tinggi (median ±0,73), soliditas mendekati 1, jumlah titik sudut sederhana (4–6), sudut dan panjang sisi relatif seragam.</p>
+          </article>
+          <article class="interp-card c1">
+            <div class="cluster-label">Cluster 1 — Kompleks, Memanjang, atau Tidak Beraturan (17,5%)</div>
+            <p>Kelompok minoritas (8.750 bidang): bentuk memanjang, menyempit, bercabang, atau berliku. Compactness rendah (median ±0,46), elongation tinggi (median ±2,1), batas dengan vertex lebih banyak dan variasi sudut/sisi lebih lebar.</p>
+          </article>
+        </section>
+
+        <section id="usage">
+          <h3>Pemanfaatan BAPENDA</h3>
+          <p>Segmentasi ini merupakan <strong>penanda awal (analytical flag)</strong> untuk mendukung verifikasi kualitas digitasi dan pengayaan atribut objek pajak bumi dan bangunan berbasis karakteristik spasial — bukan penentu jenis penggunaan lahan.</p>
+        </section>
+      </div>
+    </aside>
+  </main>
+
+  <footer id="footer">
+    <div class="stat">
+      <div class="stat-dot" style="background:#6a9ab8"></div>
+      <span class="stat-label">Total Tampil:</span>
+      <span class="stat-val" id="ftr-total">…</span>
+    </div>
+    <div class="stat">
+      <div class="stat-dot" style="background:#2b82c9"></div>
+      <span class="stat-label">Cluster 0:</span>
+      <span class="stat-val" id="ftr-c0">…</span>
+    </div>
+    <div class="stat">
+      <div class="stat-dot" style="background:#d96f1c"></div>
+      <span class="stat-label">Cluster 1:</span>
+      <span class="stat-val" id="ftr-c1">…</span>
+    </div>
+    <div class="stat footer-tech">
+      <span>K-Means Clustering (K=2) · 49.994 Bidang · OpenLayers · EPSG:4326</span>
+    </div>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/ol@10.11.0/dist/ol.js"></script>
+  <script src="assets/js/app.js"></script>
+</body>
+</html>
