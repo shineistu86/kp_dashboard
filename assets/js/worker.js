@@ -6,7 +6,7 @@ self.onmessage = async (e) => {
   try {
     const resp = await fetch(url);
     if (!resp.ok) {
-      throw new Error('HTTP ' + resp.status + ' — gagal memuat ' + url);
+      throw new Error('HTTP ' + resp.status + ', gagal memuat ' + url);
     }
 
     const total = Number(resp.headers.get('Content-Length') || 0);

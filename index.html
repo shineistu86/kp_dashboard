@@ -3,10 +3,11 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Dashboard visualisasi hasil K-Means Clustering 49.994 bidang tanah SAPADA — BAPENDA Kabupaten Garut. Dibangun dengan OpenLayers.">
+  <meta name="description" content="Dashboard visualisasi hasil K-Means Clustering 49.994 bidang tanah SAPADA | BAPENDA Kabupaten Garut. Dibangun dengan OpenLayers.">
   <link rel="icon" href="data:,">
-  <title>Peta Segmentasi Morfometri Bidang Tanah — BAPENDA Kabupaten Garut</title>
+  <title>Peta Segmentasi Morfometri Bidang Tanah | BAPENDA Kabupaten Garut</title>
 
+  <link rel="stylesheet" href="assets/css/fonts.css">
   <link rel="stylesheet" href="assets/vendor/ol.css">
   <link rel="stylesheet" href="assets/css/style.css">
 </head>
@@ -26,7 +27,7 @@
   <header id="header">
     <div class="title-block">
       <h1>PETA SEGMENTASI MORFOMETRI BIDANG TANAH</h1>
-      <p>Analisis K-Means Clustering &amp; Batas Admin — BAPENDA Kabupaten Garut</p>
+      <p>Analisis K-Means Clustering &amp; Batas Admin | BAPENDA Kabupaten Garut</p>
     </div>
     <div class="header-actions">
       <div class="badge">
@@ -52,7 +53,7 @@
     <div class="filter-group">
       <label class="label" for="admin-select">Desa/Kel:</label>
       <select id="admin-select" title="Pilih wilayah administrasi">
-        <option value="all">-- Semua Desa/Kelurahan (Garut) --</option>
+        <option value="all">Semua Desa/Kelurahan (Garut)</option>
       </select>
     </div>
 
@@ -124,18 +125,18 @@
         <section id="interp">
           <h3>Interpretasi Cluster</h3>
           <article class="interp-card c0">
-            <div class="cluster-label">Cluster 0 — Bidang Reguler dan Kompak (82,5%)</div>
+            <div class="cluster-label">Cluster 0: Bidang Reguler dan Kompak (82,5%)</div>
             <p>Kelompok mayoritas (41.244 bidang): bentuk kompak dan beraturan mendekati persegi. Compactness tinggi (median ±0,73), soliditas mendekati 1, jumlah titik sudut sederhana (4–6), sudut dan panjang sisi relatif seragam.</p>
           </article>
           <article class="interp-card c1">
-            <div class="cluster-label">Cluster 1 — Kompleks, Memanjang, atau Tidak Beraturan (17,5%)</div>
+            <div class="cluster-label">Cluster 1: Kompleks, Memanjang, atau Tidak Beraturan (17,5%)</div>
             <p>Kelompok minoritas (8.750 bidang): bentuk memanjang, menyempit, bercabang, atau berliku. Compactness rendah (median ±0,46), elongation tinggi (median ±2,1), batas dengan vertex lebih banyak dan variasi sudut/sisi lebih lebar.</p>
           </article>
         </section>
 
         <section id="usage">
           <h3>Pemanfaatan BAPENDA</h3>
-          <p>Segmentasi ini merupakan <strong>penanda awal (analytical flag)</strong> untuk mendukung verifikasi kualitas digitasi dan pengayaan atribut objek pajak bumi dan bangunan berbasis karakteristik spasial — bukan penentu jenis penggunaan lahan.</p>
+          <p>Segmentasi ini merupakan <strong>penanda awal (analytical flag)</strong> untuk mendukung verifikasi kualitas digitasi dan pengayaan atribut objek pajak bumi dan bangunan berbasis karakteristik spasial, bukan penentu jenis penggunaan lahan.</p>
         </section>
       </div>
     </aside>
@@ -158,7 +159,7 @@
       <span class="stat-val" id="ftr-c1">…</span>
     </div>
     <div class="stat footer-tech">
-      <span>K-Means Clustering (K=2) · 49.994 Bidang · OpenLayers · EPSG:4326</span>
+      <span>K-Means Clustering (K=2) | 49.994 Bidang | OpenLayers | EPSG:4326</span>
     </div>
   </footer>
 

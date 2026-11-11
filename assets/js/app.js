@@ -1,5 +1,5 @@
 /* ==========================================================================
-   KP DASHBOARD — Peta Segmentasi Morfometri Bidang Tanah (OpenLayers)
+   KP DASHBOARD : Peta Segmentasi Morfometri Bidang Tanah (OpenLayers)
    Data : hasil_clustering_polygon_v9.geojson (49.994 bidang, poligon asli)
    Sinkron: Laporan KP 2307016 rev p5 12 11 2026 (C0 biru 82,5% / C1 oranye 17,5%)
    ========================================================================== */
@@ -20,8 +20,8 @@ const COLORS = {
   1: { fill: 'rgba(217,111,28,0.62)', stroke: '#96480b' }
 };
 const CLUSTER_LABEL = {
-  0: 'Cluster 0 — Reguler dan Kompak',
-  1: 'Cluster 1 — Kompleks, Memanjang, atau Tidak Beraturan'
+  0: 'Cluster 0: Reguler dan Kompak',
+  1: 'Cluster 1: Kompleks, Memanjang, atau Tidak Beraturan'
 };
 const PATHS = {
   parcels: 'hasil_clustering_polygon_v9.geojson',
@@ -172,7 +172,7 @@ function showTooltip(feature, coord) {
   tooltipEl.innerHTML =
     '<div class="tt-id">Bidang #' + feature.get('polygon_id') + '</div>' +
     '<div class="' + (c === 0 ? 'tt-c0' : 'tt-c1') + '">' + CLUSTER_LABEL[c] + '</div>' +
-    '<div class="tt-row">Luas ' + fmtInt(Math.round(feature.get('area'))) + ' m² · Komp ' +
+    '<div class="tt-row">Luas ' + fmtInt(Math.round(feature.get('area'))) + ' m², Komp ' +
     Number(feature.get('compactness')).toFixed(3) + '</div>';
   tooltipEl.classList.add('visible');
   tooltip.setPosition(coord);
@@ -248,8 +248,8 @@ function updateStats() {
 
   if ($('hdr-total')) $('hdr-total').textContent = fmtInt(total);
   if ($('ftr-total')) $('ftr-total').textContent = fmtInt(total);
-  if ($('c0-count')) $('c0-count').textContent = fmtInt(c0) + ' bidang — ' + p0.toFixed(1).replace('.', ',') + '%';
-  if ($('c1-count')) $('c1-count').textContent = fmtInt(c1) + ' bidang — ' + p1.toFixed(1).replace('.', ',') + '%';
+  if ($('c0-count')) $('c0-count').textContent = fmtInt(c0) + ' bidang (' + p0.toFixed(1).replace('.', ',') + '%)';
+  if ($('c1-count')) $('c1-count').textContent = fmtInt(c1) + ' bidang (' + p1.toFixed(1).replace('.', ',') + '%)';
   if ($('c0-bar')) $('c0-bar').style.width = p0 + '%';
   if ($('c1-bar')) $('c1-bar').style.width = p1 + '%';
   if ($('ftr-c0')) $('ftr-c0').innerHTML = fmtInt(c0) + ' <span class="pct">(' + p0.toFixed(1).replace('.', ',') + '%)</span>';
@@ -425,7 +425,7 @@ window.addEventListener('resize', () => {
 function populateDesaDropdown(list) {
   const sel = $('admin-select');
   if (!sel) return;
-  sel.innerHTML = '<option value="all">-- Semua Desa/Kelurahan (Garut) --</option>';
+    sel.innerHTML = '<option value="all">Semua Desa/Kelurahan (Garut)</option>';
   list.forEach((d) => {
     const opt = document.createElement('option');
     opt.value = d.id;
